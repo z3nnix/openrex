@@ -18,6 +18,16 @@ void kmain(void) {
 		println(logo[i]);
 		i++;
 	}
+	i = 0;
+
 	newline();
+	newline();
+
+	println(":: Kernel running.");
+	sleep(1);
+	println(":: IDT loaded.");
+	sleep(1);
+	println(":: Rlibc loaded.");
+
 	return;
 }
