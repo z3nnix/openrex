@@ -2,9 +2,8 @@
 
 void kmain(void) {
 	clearscreen();
-	print(":: boot..");
-	println();
-	print(":: kernel is start.");
+	println(":: boot..");
+	println(":: kernel is start.");
 
 	return;
 }
