@@ -1,10 +1,8 @@
+#include "idt.c"
 #include "../rlibc/stdio.h"
+#include "../rlibc/time.h"
 
 void kmain(void) {
-	clearscreen();
-	println(":: boot..");
-	println(":: kernel is start.");
-	newline();
 	const char *logo[7] = {
 		" ______   .______    _______ .__   __.     .______       _______ ___   ___ ",
 		" /  __  %  |   _  %  |   ____||  % |  |    |   _  %     |   ____|%  % /  / ",
@@ -12,7 +10,7 @@ void kmain(void) {
 		"|  |  |  | |   ___/  |   __|  |  . `  |    |      /     |   __|    >   <   ",
 		"|  `--'  | |  |      |  |____ |  |%   |    |  |%  %----.|  |____  /  .  %  ",
 		" %______/  | _|      |_______||__| %__|    | _| `._____||_______|/__/ %__% ",
-		"                                         - by https://github.com/setscript"
+		"                                           - current version: v0.1 indev"
 	};
 	
 	int i = 0;
