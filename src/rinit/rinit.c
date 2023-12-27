@@ -14,8 +14,13 @@ void rinit(const int mode) {
 	
 	int i = 0;
 	while(i < 7) {
-		println(logo[i],15);
-		i++;
+		if(i == 6) {
+			println(logo[i],14);
+			i++;
+		} else {
+			println(logo[i],15);
+			i++;
+		}
 	}
 	i = 0;
 	} else if(mode == 2) {
