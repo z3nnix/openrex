@@ -19,16 +19,35 @@ void scroll_up(void) {
     current_loc = 0;
 }
 
-void print(const char *str) {
+void print(const char *str, int color) {
 	unsigned int i = 0;
 	while (str[i] != '\0') {
 		vidptr[current_loc++] = str[i++];
-		vidptr[current_loc++] = 0x07;
+		vidptr[current_loc++] = color;
 	}
 	
 	if (current_loc >= SCREENSIZE) {
         	scroll_up();
 	}
+
+	/* colors numbers:
+	 		0  - black
+			1  - blue
+			2  - green
+			3  - cyan
+			4  - red
+			5  - purple
+			6  - brown
+			7  - gray
+			8  - dark gray
+			9  - light blue
+			10 - light green
+			11 - light cyan
+			12 - light red
+			13 - light purple
+			14 - yellow
+			15 - white
+	 */
 }
 
 void newline(void) {
@@ -36,7 +55,21 @@ void newline(void) {
 	current_loc = current_loc + (line_size - current_loc % (line_size));
 }
 
-void println(const char *str) {
-	print(str);
+
+void println(const char *str, const int color) {
+	print(str,color); // view 
 	newline();
+}
+
+char __getch() {
+	char symbol;
+	while (1) {
+		if ((port_byte_in(0x64) & 0x01) == 1) {
+			symbol = port_byte_in(0x60);
+			if (symbol > -1) {
+				return symbol;
+			}
+		}
+	}
+	return 0;
 }
