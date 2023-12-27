@@ -1,6 +1,6 @@
 void rinit(const int mode) {
 	if (mode == 0) {
-		println(":: rinit works.");
+		println(":: rinit works.",15);
 	} else if(mode == 1) {
 	const char *logo[7] = {
 		" ______   .______    _______ .__   __.     .______       _______ ___   ___ ",
@@ -14,7 +14,7 @@ void rinit(const int mode) {
 	
 	int i = 0;
 	while(i < 7) {
-		println(logo[i]);
+		println(logo[i],15);
 		i++;
 	}
 	i = 0;
@@ -27,13 +27,13 @@ void rinit(const int mode) {
 
 		int i = 0;
 		while(i < 3) {
-			println(logs[i]);
+			println(logs[i],15);
 			sleep(1);
 			i++;
 		}
 		i = 0;
 	} else {
-		println(":: unknown mode.");
+		println(":: unknown mode.",15);
 	}
 
 }
