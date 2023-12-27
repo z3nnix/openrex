@@ -18,7 +18,7 @@ void rinit(const int mode) {
 			println(logo[i],14);
 			i++;
 		} else {
-			println(logo[i],15);
+			println(logo[i],6);
 			i++;
 		}
 	}
