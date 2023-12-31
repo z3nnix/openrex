@@ -24,7 +24,7 @@ qemu-system-i386 -m 10M -kernel kernel -name openrex
 ```
 > 10M is the maximum value that the OS may need.
 
-# [!warning]
+# [!WARNING]
 It is **not** recommended to run the current operating system on real hardware, since at the moment the operating system is only a project for applying knowledge in the field of ``osdev`` in practice. The OS can also **maybe** possible only run on machines with ``x32`` processors.
 
 # LICENSE
