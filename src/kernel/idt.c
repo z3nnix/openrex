@@ -8,5 +8,4 @@
 #define KERNEL_CODE_SEGMENT_OFFSET 0x08
 
 #define ENTER_KEY_CODE 0x1C
-
-
+extern char port_byte_in(int port);
