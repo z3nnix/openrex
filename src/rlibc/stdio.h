@@ -12,11 +12,12 @@ void clearscreen(void) {
 
 void scroll_up(void) {
 	clearscreen();
-    unsigned int i;
-    for (i = current_loc; i < SCREENSIZE; i++) {
-        vidptr[i - current_loc] = vidptr[i];
-    }
-    current_loc = 0;
+   	unsigned int i;
+    	for (i = current_loc; i < SCREENSIZE; i++) {
+       		vidptr[i - current_loc] = vidptr[i];
+    	}
+    	
+	current_loc = 0;
 }
 
 void print(const char *str, int color) {
@@ -49,6 +50,36 @@ void print(const char *str, int color) {
 			15 - white
 	 */
 }
+/*
+void printc(const char c, const int color) {
+	unsigned int i = 0;
+	
+	vidptr[current_loc++] = (char)с;
+	vidptr[current_loc++] = color;
+	
+	if (current_loc >= SCREENSIZE) {
+        	scroll_up();
+	}
+
+	/* colors numbers:
+	 		0  - black
+			1  - blue
+			2  - green
+			3  - cyan
+			4  - red
+			5  - purple
+			6  - brown
+			7  - gray
+			8  - dark gray
+			9  - light blue
+			10 - light green
+			11 - light cyan
+			12 - light red
+			13 - light purple
+			14 - yellow
+			15 - white
+	 */
+//}
 
 void newline(void) {
 	unsigned int line_size = BYTES_FOR_EACH_ELEMENT * COLUMNS_IN_LINE;
@@ -57,7 +88,7 @@ void newline(void) {
 
 
 void println(const char *str, const int color) {
-	print(str,color); // view 
+	print(str,color);
 	newline();
 }
 
@@ -71,5 +102,31 @@ char __getch() {
 			}
 		}
 	}
+
+	
 	return 0;
+}
+
+
+void its(int32_t i, uint8_t base, char *buf) {
+	bool negative = false;
+
+	if(i < 0) {
+		negative = true;
+		i *= -1;
+	}
+
+	int32_t index = 0;
+
+	do {
+		int32_t remainder = i % base;
+
+		buf[index++] =
+				(remainder > 9) ? (remainder - 10) + 'A' : remainder + '0';
+		i /= base;
+	} while (i > 0);
+	
+	if(negative) { buf[index++] = '-'; }
+
+	buf[index] = '\0';
 }
