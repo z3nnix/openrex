@@ -17,7 +17,7 @@ You must download the following tools: ``qemu``, ``gcc``, ``nasm`` and ``grub``
 Next, you need launch build.sh script, this file must be run from the project directory.
 
 > [!NOTE]
-> The current operating system can be run with a minimum of 50 mb RAM.
+> The current operating system can be run with a minimum of 40 mb RAM.
 
 # Contributors:
 - [@setscript](https://github.com/setscript) (or i)
