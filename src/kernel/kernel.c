@@ -4,11 +4,8 @@
 #include "../rinit/rinit.c"
 
 void kmain(void) {
+	clearscreen();
 	rinit(1);
 	rinit(2);
-
-	println("###",15);
-	println("###",1);
-	println("###",4);
 	return;
 }
