@@ -1,3 +1,7 @@
+#include <stdbool.h>
+#include <stdint.h>
+#include <stdarg.h>
+
 unsigned int current_loc = 0;
 
 char *vidptr = (char*)0xb8000;
