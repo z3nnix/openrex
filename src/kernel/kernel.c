@@ -4,11 +4,13 @@
 #include <stdarg.h>
 #include "../nlibc/stdio.h"
 #include "../nlibc/time.h"
+#include "../nlibc/stdlib.h"
 
 void kmain(void) {
 	while(1) {
-		println("NovariaOS", 7);
-		println("test", 7);
-		sleep(2);
+		int randColor = rand(0, 15);
+
+		println("NovariaOS", randColor);
+		sleep(1);
 	}
 }
