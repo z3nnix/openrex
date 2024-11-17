@@ -1,9 +1,9 @@
 #define NULL ((void*)0) // Define the null pointer. 
 
+unsigned int randSeed = 12345;  // Initializing the seed for the pseudo-random number generator
+
 // Function to generate a pseudo-random number in the range [min, max]
 int rand(int min, int max) {
-    unsigned int randSeed = 12345;  // Initializing the seed for the pseudo-random number generator
-
     // Linear congruential generator formula to update the seed
     randSeed = randSeed * 1103515245 + 12345;  // ! DO NOT CHANGE THIS LINE !
 
