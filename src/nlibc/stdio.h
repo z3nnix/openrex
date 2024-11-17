@@ -10,7 +10,7 @@ void clearscreen(void) {
 	}
 }
 
-void scroll_up(void) {
+void scroll() {
 	clearscreen();
    	unsigned int i;
     	for (i = current_loc; i < SCREENSIZE; i++) {
@@ -22,13 +22,13 @@ void scroll_up(void) {
 
 void print(const char *str, int color) {
 	unsigned int i = 0;
+	if (current_loc >= SCREENSIZE) {
+		scroll();
+	}
+
 	while (str[i] != '\0') {
 		vidptr[current_loc++] = str[i++];
 		vidptr[current_loc++] = color;
-	}
-	
-	if (current_loc >= SCREENSIZE) {
-        	scroll_up();
 	}
 
 	/* colors numbers:
@@ -50,36 +50,6 @@ void print(const char *str, int color) {
 			15 - white
 	 */
 }
-/*
-void printc(const char c, const int color) {
-	unsigned int i = 0;
-	
-	vidptr[current_loc++] = (char)с;
-	vidptr[current_loc++] = color;
-	
-	if (current_loc >= SCREENSIZE) {
-        	scroll_up();
-	}
-
-	/* colors numbers:
-	 		0  - black
-			1  - blue
-			2  - green
-			3  - cyan
-			4  - red
-			5  - purple
-			6  - brown
-			7  - gray
-			8  - dark gray
-			9  - light blue
-			10 - light green
-			11 - light cyan
-			12 - light red
-			13 - light purple
-			14 - yellow
-			15 - white
-	 */
-//}
 
 void newline(void) {
 	unsigned int line_size = BYTES_FOR_EACH_ELEMENT * COLUMNS_IN_LINE;

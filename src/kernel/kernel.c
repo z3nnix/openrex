@@ -2,15 +2,13 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdarg.h>
-#include "../rlibc/stdio.h"
-#include "../rlibc/time.h"
-#include "../rinit/rinit.c"
+#include "../nlibc/stdio.h"
+#include "../nlibc/time.h"
 
 void kmain(void) {
-	clearscreen();
-	rinit(1);
-	rinit(2);
-	
-	return;
+	while(1) {
+		println("NovariaOS", 7);
+		println("test", 7);
+		sleep(2);
+	}
 }
-
