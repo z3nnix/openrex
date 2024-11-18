@@ -3,10 +3,6 @@
 #include <stdarg.h>
 #include "keymap.h"  // Make sure the keymap is configured correctly
 
-#define SCREENSIZE 4000  // Example screen size for VGA (80x25*2 bytes)
-#define COLUMNS_IN_LINE 80
-#define BYTES_FOR_EACH_ELEMENT 2
-
 unsigned int current_loc = 0;  // Current position in video memory
 char *vidptr = (char*)0xb8000;  // Address of VGA video memory
 
