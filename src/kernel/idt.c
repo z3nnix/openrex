@@ -8,4 +8,5 @@
 #define KERNEL_CODE_SEGMENT_OFFSET 0x08
 
 #define ENTER_KEY_CODE 0x1C
+#define MAX_NAME_LENGTH 50
 extern char port_byte_in(int port);
