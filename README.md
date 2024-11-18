@@ -20,5 +20,5 @@ Next, you need launch build.sh script, this file must be run from the project di
 > The current operating system can be run with a minimum of 40 mb RAM.
 
 # Contributors:
-- [@setscript](https://github.com/setscript) (or i)
-- ``You could be here.``
+- [@z3nnixt](https://github.com/setscript)
+- [@asudouser](https://github.com/asudouser)
