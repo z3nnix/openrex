@@ -4,14 +4,18 @@
 #include "../nlibc/stdbool.h"
 #include "../nlibc/stdlib.h"
 
+#define MAX_NAME_LENGTH 50
 
-void kmain(void) {
+void kmain() {
+    char name[MAX_NAME_LENGTH];
+    
+    clearscreen();
+    println("Welcome to the Simple Input Example!", 0x07);
+
+    scanf(name, sizeof(name));
+    println("\nYou entered: ", 0x07);
+
 	while(true) {
-		int randColor = rand(0, 15);
-
-		// println("Привет, Россия!", 15);
-
-		println("NovariaOS", randColor);
-		sleep(1);
+		println(name, rand(0, 15));
 	}
 }

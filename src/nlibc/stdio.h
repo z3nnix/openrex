@@ -73,6 +73,15 @@ void scanf(char *buffer, int max_length) {
     while (index < max_length - 1) {  // Leave space for the terminating '\0'
         char c = __getch();
 
+          if ((unsigned char)c < sizeof(keymap)) {
+            c = keymap[(unsigned char)c];  // Convert key code to character
+            if (c != '\0') {  // Ignore unsupported characters
+                buffer[index++] = c;
+                vidptr[current_loc++] = c;  // Output the character on the screen
+                vidptr[current_loc++] = 0x07;
+            }
+        }
+
         if (c == '\n') {  // Enter key pressed
             break;
         }
@@ -85,15 +94,6 @@ void scanf(char *buffer, int max_length) {
                 vidptr[current_loc + 1] = 0x07;
             }
             continue;
-        }
-
-        if ((unsigned char)c < sizeof(keymap)) {
-            c = keymap[(unsigned char)c];  // Convert key code to character
-            if (c != '\0') {  // Ignore unsupported characters
-                buffer[index++] = c;
-                vidptr[current_loc++] = c;  // Output the character on the screen
-                vidptr[current_loc++] = 0x07;
-            }
         }
     }
 
