@@ -6,6 +6,7 @@
 
 void kmain() {
     char sometext[MAX_NAME_LENGTH];
+    
     while (true) {
         print("# ", 7);
         scanf(sometext, sizeof(sometext));
