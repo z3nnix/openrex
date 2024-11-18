@@ -66,36 +66,35 @@ char __getch() {
     }
 }
 
-// Read a string from the keyboard
 void scanf(char *buffer, int max_length) {
     int index = 0;
 
-    while (index < max_length - 1) {  // Leave space for the terminating '\0'
+    while (index < max_length - 1) {  // Оставляем место для завершающего '\0'
         char c = __getch();
 
-          if ((unsigned char)c < sizeof(keymap)) {
-            c = keymap[(unsigned char)c];  // Convert key code to character
-            if (c != '\0') {  // Ignore unsupported characters
-                buffer[index++] = c;
-                vidptr[current_loc++] = c;  // Output the character on the screen
-                vidptr[current_loc++] = 0x07;
-            }
-        }
+        if ((unsigned char)c < sizeof(keymap)) {
+            c = keymap[(unsigned char)c];  // Преобразуем код клавиши в символ
+            if (c != '\0') {  // Игнорируем неподдерживаемые символы
+                if (c == '\n') {  // Нажата клавиша Enter
+                    break;  // Завершаем ввод
+                }
 
-        if (c == '\n') {  // Enter key pressed
-            break;
-        }
-
-        if (c == '\b') {  // Backspace key pressed
-            if (index > 0) {
-                index--;
-                current_loc -= 2;
-                vidptr[current_loc] = ' ';  // Remove the character from the screen
-                vidptr[current_loc + 1] = 0x07;
+                if (c == '\b') {  // Нажата клавиша Backspace
+                    if (index > 0) {
+                        index--; // Уменьшаем индекс, чтобы не учитывать последний символ
+                        current_loc -= 2; // Переходим к предыдущему символу на экране
+                        vidptr[current_loc] = ' ';  // Удаляем символ с экрана
+                        vidptr[current_loc + 1] = 0x07; // Восстанавливаем цвет фона
+                    }
+                } else {  // Если это не Backspace, добавляем символ в буфер
+                    buffer[index++] = c; // Добавляем символ в буфер
+                    vidptr[current_loc++] = c;  // Выводим символ на экран
+                    vidptr[current_loc++] = 0x07; // Цвет символа (обычно белый на черном фоне)
+                }
             }
-            continue;
         }
     }
 
-    buffer[index] = '\0';  // Terminate the string with a null character
+    buffer[index] = '\0';  // Завершаем строку нулевым символом
+    newline();
 }
