@@ -1,147 +1,105 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdarg.h>
-#include "keymap.h"
+#include "keymap.h"  // Make sure the keymap is configured correctly
 
-unsigned int current_loc = 0;
+#define SCREENSIZE 4000  // Example screen size for VGA (80x25*2 bytes)
+#define COLUMNS_IN_LINE 80
+#define BYTES_FOR_EACH_ELEMENT 2
 
-char *vidptr = (char*)0xb8000;
+unsigned int current_loc = 0;  // Current position in video memory
+char *vidptr = (char*)0xb8000;  // Address of VGA video memory
 
+// Clear the screen
 void clearscreen(void) {
-	unsigned int i = 0;
-	while (i < SCREENSIZE) {
-		vidptr[i++] = ' ';
-		vidptr[i++] = 0x07;
-	}
+    unsigned int i = 0;
+    while (i < SCREENSIZE) {
+        vidptr[i++] = ' ';  // Fill the screen with spaces
+        vidptr[i++] = 0x07; // Text color (white on black)
+    }
+    current_loc = 0;  // Reset cursor position
 }
 
+// Scroll the screen
 void scroll() {
-	clearscreen();
-   	unsigned int i;
-    	for (i = current_loc; i < SCREENSIZE; i++) {
-       		vidptr[i - current_loc] = vidptr[i];
-    	}
-    	
-	current_loc = 0;
+    for (unsigned int i = COLUMNS_IN_LINE * BYTES_FOR_EACH_ELEMENT; i < SCREENSIZE; i++) {
+        vidptr[i - COLUMNS_IN_LINE * BYTES_FOR_EACH_ELEMENT] = vidptr[i];
+    }
+    for (unsigned int i = SCREENSIZE - COLUMNS_IN_LINE * BYTES_FOR_EACH_ELEMENT; i < SCREENSIZE; i += 2) {
+        vidptr[i] = ' ';  // Clear the last line
+        vidptr[i + 1] = 0x07;  // Text color
+    }
+    current_loc -= COLUMNS_IN_LINE * BYTES_FOR_EACH_ELEMENT; // Move cursor up
 }
 
+// Print a string with the specified color
 void print(const char *str, int color) {
-	unsigned int i = 0;
-	if (current_loc >= SCREENSIZE) {
-		scroll();
-	}
-
-	while (str[i] != '\0') {
-		vidptr[current_loc++] = str[i++];
-		vidptr[current_loc++] = color;
-	}
-
-	/* colors numbers:
-	 		0  - black
-			1  - blue
-			2  - green
-			3  - cyan
-			4  - red
-			5  - purple
-			6  - brown
-			7  - gray
-			8  - dark gray
-			9  - light blue
-			10 - light green
-			11 - light cyan
-			12 - light red
-			13 - light purple
-			14 - yellow
-			15 - white
-	 */
+    unsigned int i = 0;
+    while (str[i] != '\0') {
+        if (current_loc >= SCREENSIZE) {
+            scroll();  // Scroll if the end of the screen is reached
+        }
+        vidptr[current_loc++] = str[i++];  // Character
+        vidptr[current_loc++] = color;    // Character color
+    }
 }
 
+// Move to the next line
 void newline(void) {
-	unsigned int line_size = BYTES_FOR_EACH_ELEMENT * COLUMNS_IN_LINE;
-	current_loc = current_loc + (line_size - current_loc % (line_size));
+    unsigned int line_size = BYTES_FOR_EACH_ELEMENT * COLUMNS_IN_LINE;
+    current_loc = current_loc + (line_size - current_loc % line_size);
+    if (current_loc >= SCREENSIZE) {
+        scroll();
+    }
 }
 
-
-void println(const char *str, const int color) {
-	print(str,color);
-	newline();
+// Print a string and move to the next line
+void println(const char *str, int color) {
+    print(str, color);
+    newline();
 }
 
+// Read a character from the keyboard
 char __getch() {
-	char symbol;
-	while (1) {
-		if ((port_byte_in(0x64) & 0x01) == 1) {
-			symbol = port_byte_in(0x60);
-			if (symbol > -1) {
-				return symbol;
-			}
-		}
-	}
-
-	
-	return 0;
+    char symbol;
+    while (1) {
+        if ((port_byte_in(0x64) & 0x01) == 1) {  // Check for input
+            symbol = port_byte_in(0x60);  // Read the character
+            return symbol;
+        }
+    }
 }
 
-
-
+// Read a string from the keyboard
 void scanf(char *buffer, int max_length) {
     int index = 0;
-    int current_loc_backup = current_loc; // Save current cursor position
 
-    while (index < max_length - 1) { // Leave space for the null terminator
-        char c = __getch(); // Read a character
-        
-        if (c == '\n') { // If Enter is pressed
-            break; // Exit the loop
+    while (index < max_length - 1) {  // Leave space for the terminating '\0'
+        char c = __getch();
+
+        if (c == '\n') {  // Enter key pressed
+            break;
         }
 
-        if (c == '\b') { // If Backspace is pressed
-            if (index > 0) { // Check if there is something to delete
-                index--; // Decrease index
-                current_loc--; // Move to the previous position
-
-                // Remove the last character from the screen
-                vidptr[current_loc * 2] = ' '; // Clear the current position
-                vidptr[current_loc * 2 + 1] = 0x07; // Set color (white on black)
-
-                continue; // Go to the next iteration of the loop
+        if (c == '\b') {  // Backspace key pressed
+            if (index > 0) {
+                index--;
+                current_loc -= 2;
+                vidptr[current_loc] = ' ';  // Remove the character from the screen
+                vidptr[current_loc + 1] = 0x07;
             }
-            continue; // If nothing to delete, continue the loop
+            continue;
         }
 
-        if ((unsigned char)c < sizeof(keymap)) { 
-            c = keymap[(unsigned char)c]; // Convert code to character
-            
-            if (c != '\0' && index < max_length - 1) { // Check for invalid character and space for new character
-                buffer[index++] = c; // Save character in the array
-
-                // Clear the current position for the new character
-                vidptr[current_loc * 2] = ' '; // Clear the current position
-                vidptr[current_loc * 2 + 1] = 0x07; // Set color (white on black)
-
-                // Print the current character on the screen
-                vidptr[current_loc * 2] = c; // Print new character
-                vidptr[current_loc * 2 + 1] = 0x07; // Set color (white on black)
-
-                current_loc++; // Move to the next cursor position
-                
-                // If reached the end of the line, move to the next line
-                if (current_loc % COLUMNS_IN_LINE == 0) {
-                    current_loc += COLUMNS_IN_LINE; // Move to the next line
-                    current_loc -= COLUMNS_IN_LINE; // Return cursor to start of next line (this line should be removed)
-                    current_loc += COLUMNS_IN_LINE; // Correctly set cursor to next line start
-                }
-
-                // Ensure that we do not exceed screen bounds
-                if (current_loc >= SCREENSIZE / BYTES_FOR_EACH_ELEMENT) {
-                    current_loc = SCREENSIZE / BYTES_FOR_EACH_ELEMENT - 1; // Prevent overflow
-                    scroll(); // Optionally scroll if needed
-                }
+        if ((unsigned char)c < sizeof(keymap)) {
+            c = keymap[(unsigned char)c];  // Convert key code to character
+            if (c != '\0') {  // Ignore unsupported characters
+                buffer[index++] = c;
+                vidptr[current_loc++] = c;  // Output the character on the screen
+                vidptr[current_loc++] = 0x07;
             }
         }
     }
 
-    buffer[index] = '\0'; // Terminate string with a null character
-
-    current_loc = current_loc_backup; // Restore cursor position after input
+    buffer[index] = '\0';  // Terminate the string with a null character
 }

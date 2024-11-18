@@ -8,6 +8,9 @@
 void kmain(void) {
 	while(true) {
 		int randColor = rand(0, 15);
+
+		// println("Привет, Россия!", 15);
+
 		println("NovariaOS", randColor);
 		sleep(1);
 	}
