@@ -2,7 +2,7 @@
 # Assembler compilation
 nasm -f elf32 src/kernel/kernel.asm -o kasm.o
 # Compile the C file with stack protection disabled and the flag for unexecutable stack.
-gcc -fno-stack-protector -m32 -c src/kernel/kernel.c -o kc.o
+gcc -I./include -fno-stack-protector -m32 -c src/kernel/kernel.c -o kc.o
 # Compose with flag for non-executable stack
 ld -m elf_i386 -T link.ld -o kernel kasm.o kc.o -z noexecstack
 # Move the compiled kernel to the correct directory

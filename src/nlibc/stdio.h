@@ -5,6 +5,7 @@
 
 unsigned int current_loc = 0;  // Current position in video memory
 char *video = (char*)0xb8000;   // Address of VGA video memory
+void outb(unsigned short port, unsigned char val);
 
 void terminal_set_cursor(int x, int y) {
     uint16_t pos = y * COLUMNS_IN_LINE + x; // Corrected position calculation
