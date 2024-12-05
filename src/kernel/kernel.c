@@ -1,14 +1,12 @@
 #include "idt.c"
 
-#include "../nlibc/stdio.h"
-#include "../nlibc/time.h"
-#include "../nlibc/stdbool.h"
-#include "../nlibc/stdlib.h"
+#include "./drivers/keyboard.c"
+#include "./drivers/vga.c"
 
 #include <string.h>
 #include <stddef.h>
 
-#include "ramfs.c"
+#include "./fs/ramfs.c"
 
 void kmain() {
     print("NovariaOS. 0.0.2 indev build. TG: ", 15);
