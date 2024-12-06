@@ -1,155 +1,163 @@
 #include <ramfs.h>
+#include <string.h> // Для функции strlen
+#include <stdbool.h> // Для типа bool
 
-// Structure definition for a file in RAM filesystem
+char* itoa(int num, char* str, int base);
+
+void reverse(char* str, int length) {
+    int start = 0;
+    int end = length - 1;
+    while (start < end) {
+        char temp = str[start];
+        str[start] = str[end];
+        str[end] = temp;
+        start++;
+        end--;
+    }
+}
+
 typedef struct {
-    char name[MAX_NAME_LENGTH];  // Name of the file
-    uint8_t data[MAX_FILE_SIZE]; // Actual content of the file
-    size_t size;                 // Size of the file content
-    bool is_directory;           // Flag to indicate if it's a directory
+    char name[MAX_NAME_LENGTH];
+    uint8_t data[MAX_FILE_SIZE];
+    size_t size;
+    bool is_directory;
 } RamFile;
 
-// Array to store all files in the RAM filesystem
 RamFile ramfs[MAX_FILES];
-// Counter to keep track of the number of files
+// Счётчик файлов
 int file_count = 0;
 
-// Initialize the RAM filesystem
 void init_ramfs() {
-    file_count = 0;  // Reset the file count to 0
+    file_count = 0;
 }
 
-// Create a new file or directory in the RAM filesystem
 int ramfs_create(const char* name, bool is_directory) {
-    // Check if the filesystem is full
     if (file_count >= MAX_FILES) {
-        return -1;  // Return error if no more files can be created
+        return -1;
     }
-    
-    // Get a pointer to the new file structure
+
     RamFile* file = &ramfs[file_count];
-    strncpy(file->name, name, MAX_NAME_LENGTH);  // Copy the file name
-    file->size = 0;  // Initialize size to 0
-    file->is_directory = is_directory;  // Set directory flag
-    
-    return file_count++;  // Return the file ID and increment the count
+    strncpy(file->name, name, MAX_NAME_LENGTH);
+    file->size = 0;
+    file->is_directory = is_directory;
+
+    return file_count++;
 }
 
-// Write data to a file in the RAM filesystem
 int ramfs_write(int file_id, const void* buffer, size_t size) {
-    // Check if the file ID is valid and it's not a directory
     if (file_id < 0 || file_id >= file_count || ramfs[file_id].is_directory) {
-        return -1;  // Return error if invalid
+        return -1;
     }
-    
-    RamFile* file = &ramfs[file_id];  // Get pointer to the file
-    // Determine how much data can be written
+
+    RamFile* file = &ramfs[file_id];
     size_t write_size = size > MAX_FILE_SIZE ? MAX_FILE_SIZE : size;
-    memcpy(file->data, buffer, write_size);  // Copy data to file
-    file->size = write_size;  // Update file size
-    
-    return write_size;  // Return the number of bytes written
+    memcpy(file->data, buffer, write_size);
+    file->size = write_size;
+
+    return write_size;
 }
 
-// Read data from a file in the RAM filesystem
+// Чтение данных из файла в RAM-файловой системе
 int ramfs_read(int file_id, void* buffer, size_t size) {
-    // Check if the file ID is valid and it's not a directory
     if (file_id < 0 || file_id >= file_count || ramfs[file_id].is_directory) {
-        return -1;  // Return error if invalid
+        return -1; 
     }
-    
-    RamFile* file = &ramfs[file_id];  // Get pointer to the file
-    // Determine how much data can be read
+
+    RamFile* file = &ramfs[file_id];
     size_t read_size = size > file->size ? file->size : size;
-    memcpy(buffer, file->data, read_size);  // Copy data from file to buffer
-    
-    return read_size;  // Return the number of bytes read
+    memcpy(buffer, file->data, read_size);
+
+    return read_size;
 }
 
-// Print information about a file
 void print_file_info(int file_id) {
-    // Check if the file ID is valid
     if (file_id < 0 || file_id >= file_count) {
-        println("Invalid file ID", 15);
+        kprint("Invalid file ID", 15);
         return;
     }
-    
-    RamFile* file = &ramfs[file_id];  // Get pointer to the file
-    // Print file details
-    print("File: ", 15);
-    println(file->name, 15);
-    print(" Size: ", 15);
+
+    RamFile* file = &ramfs[file_id];
+    kprint("File: ", 15);
+    kprint(file->name, 15);
+    kprint(" Size: ", 15);
     char size_str[10];
-    itoa(file->size, size_str, 10);  // Convert size to string
-    println(size_str, 15);
-    print(" Content: ", 15);
-    println((char*)file->data, 15);
+    itoa(file->size, size_str, 10);
+    kprint(size_str, 15);
+    kprint(" Content: ", 15);
+    newline();
+    kprint((char*)file->data, 15);
+    newline();
 }
 
-// Test function for the RAM filesystem
 void test_ramfs() {
-    init_ramfs();  // Initialize the filesystem
-    println(":: RamFS Test Start", 15);
-    
-    // Create a file
-    println(":: Creating file 'test.txt'...", 15);
+    init_ramfs(); 
+    kprint(":: RamFS Test Start", 15);
+    newline();
+
+    kprint(":: Creating file 'test.txt'...", 15);
+    newline();
     int file_id = ramfs_create("test.txt", false);
     if (file_id < 0) {
-        println(":: Failed to create file", 15);
+        kprint(":: Failed to create file", 15);
+        newline();
         return;
     }
-    println(":: File created successfully", 15);
+    kprint(":: File created successfully", 15);
+    newline();
     print_file_info(file_id);
-    
-    // Write data to the file
-    println(":: Writing data to file...", 15);
+
+    kprint(":: Writing data to file...", 15);
     const char* test_data = "RamFS test";
     int write_size = ramfs_write(file_id, test_data, strlen(test_data));
     if (write_size < 0) {
-        println(":: Failed to write to file", 15);
+        kprint(":: Failed to write to file", 15);
         return;
     }
-    println(":: Data written successfully", 15);
+    kprint(":: Data written successfully", 15);
     print_file_info(file_id);
-    
-    // Read data from the file
-    println(":: Reading data from file...", 15);
+
+    kprint(":: Reading data from file...", 15);
     char buffer[MAX_FILE_SIZE];
     int read_size = ramfs_read(file_id, buffer, MAX_FILE_SIZE);
     if (read_size < 0) {
-        println(":: Failed to read from file", 15);
+        kprint(":: Failed to read from file", 15);
         return;
     }
-    buffer[read_size] = '\0';  // Null-terminate the string
-    
-    println(":: Data read successfully", 15);
-    print(":: Read content: ", 15);
-    println(buffer, 15);
-    
-    // Verify the read data matches the written data
+    buffer[read_size] = '\0';
+
+    kprint(":: Data read successfully", 15);
+    kprint(":: Read content: ", 15);
+    kprint(buffer, 15);
+
     if (strcmp(buffer, test_data) == 0) {
-        println(":: RamFS test passed successfully!", 15);
+        kprint(":: RamFS test passed successfully!", 15);
     } else {
-        println(":: RamFS test failed!", 15);
+        kprint(":: RamFS test failed!", 15);
     }
-    
-    // Create another file
-    println("::Creating another file 'example.txt'...", 15);
-    int another_file_id = ramfs_create("example.txt", false);
-    if (another_file_id < 0) {
-        println(":: Failed to create second file", 15);
-        return;
+
+    kprint(":: RamFS Test End", 15);
+}
+
+char* itoa(int num, char* str, int base) {
+    int i = 0;
+    bool isNegative = false;
+    if (num == 0) {
+        str[i++] = '0';
+        str[i] = '\0';
+        return str;
     }
-    const char* another_data = "This is another file in RamFS";
-    ramfs_write(another_file_id, another_data, strlen(another_data));
-    println(":: Second file created and written", 15);
-    print_file_info(another_file_id);
-    
-    // Display a list of all files
-    println(":: List of all files in RamFS:", 15);
-    for (int i = 0; i < file_count; i++) {
-        print_file_info(i);
-        println("", 15);  // Blank line for separation
+    if (num < 0 && base == 10) {
+        isNegative = true;
+        num = -num;
     }
-    
-    println(":: RamFS Test End", 15);
+    while (num != 0) {
+        int rem = num % base;
+        str[i++] = (rem > 9) ? (rem - 10) + 'a' : rem + '0';
+        num = num / base;
+    }
+    if (isNegative)
+        str[i++] = '-';
+    str[i] = '\0';
+    reverse(str, i);
+    return str;
 }
