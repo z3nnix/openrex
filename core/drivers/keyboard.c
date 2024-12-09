@@ -1,3 +1,5 @@
+#include <core/drivers/keymap.h>
+
 // Read a character from the keyboard
 char __getch() {
     char symbol;
