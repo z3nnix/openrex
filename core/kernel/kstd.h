@@ -7,6 +7,18 @@ typedef _Bool bool;
 void newline(void);
 void vgaprint(const char *str, int color);
 
+void reverse(char* str, int length) {
+    int start = 0;
+    int end = length - 1;
+    while (start < end) {
+        char temp = str[start];
+        str[start] = str[end];
+        str[end] = temp;
+        start++;
+        end--;
+    }
+}
+
 char* itoa(int num, char* str, int base) {
     int i = 0;
     bool is_negative = false;
@@ -44,18 +56,6 @@ char* itoa(int num, char* str, int base) {
     return str;
 }
 
-void reverse(char* str, int length) {
-    int start = 0;
-    int end = length - 1;
-    while (start < end) {
-        char temp = str[start];
-        str[start] = str[end];
-        str[end] = temp;
-        start++;
-        end--;
-    }
-}
-
 void kprint(const char *str, int color) {
     while (*str) { // While not at the end of the string
         if (*str == '\n') {
@@ -70,4 +70,4 @@ void kprint(const char *str, int color) {
 }
 
 
-#endif // _STDBOOL_H
+#endif // _KSTD_H

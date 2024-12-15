@@ -1,11 +1,12 @@
-#include "idt.c"
-
 #include <string.h>
 #include <stdint.h>
+
+#include "idt.c"
 
 #include <core/drivers/keyboard.c>
 #include <core/drivers/vga.c>
 #include <core/kernel/kstd.h>
+
 #include <core/fs/ramfs.c>
 
 void scanf(char *buffer, int max_length) {
@@ -43,9 +44,22 @@ void scanf(char *buffer, int max_length) {
     newline();
 }
 
+void test_syscall() {
+    uint32_t syscall_number = 1;
+    uint32_t arg1 = 42;         
+    uint32_t result;
+
+    asm volatile (
+        "int $0x80"
+        : "=a" (result)
+        : "a" (syscall_number), "b" (arg1)
+        : "memory"
+    );
+}
+
 void kmain() {
     init_ramfs();
-
+    
     kprint("NovariaOS. 0.0.3 indev build. TG: ", 15);
     kprint("@NovariaOS\n", 9);
 
@@ -55,11 +69,12 @@ void kmain() {
                 
     char buffer[100];
     int bytes_read = ramfs_read(file_id, buffer, sizeof(buffer));
+    // test_syscall();
     kprint(buffer, 15);
 
-    test_ramfs();
+    // test_ramfs();
 
-    while (true) {
+    while(true) {
         kprint("# ", 7);
         char sometext[MAX_TEXT_SIZE];
         scanf(sometext, sizeof(sometext));

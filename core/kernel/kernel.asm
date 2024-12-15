@@ -1,32 +1,46 @@
 bits 32
-section .text
-        align 4
-        dd 0x1BADB002               ; magic
-        dd 0x00                     ; flags
-        dd - (0x1BADB002 + 0x00)    ; checksum
 
+section .multiboot
+align 4
+    dd 0x1BADB002               ; magic
+    dd 0x00000003               ; flags (page align + memory info)
+    dd -(0x1BADB002 + 0x00000003) ; checksum
+
+section .text
+global start
 global port_byte_in
 global outb
-global start
+global system_call_wrapper
 extern kmain
-
-port_byte_in:
-	mov dx, [esp + 4]
-	in al, dx
-	ret
-
-outb:
-	mov dx, [esp + 4]   ; Get the port from the arguments
-	mov al, [esp + 8]   ; Get the value from the arguments
-	out dx, al          ; Write the value to the port
-	ret
+extern syscall_handler
 
 start:
-	cli                  ; Disable interrupts
-	mov esp, stack_space ; Set the stack pointer
-	call kmain           ; Call the main function
-	hlt                  ; Halt the processor
+    cli                  ; Disable interrupts
+    mov esp, stack_space ; Set the stack pointer
+    push ebx             ; Push multiboot info structure address
+    call kmain           ; Call the main function
+    hlt                  ; Halt the processor
+
+port_byte_in:
+    mov dx, [esp + 4]
+    in al, dx
+    ret
+
+outb:
+    mov dx, [esp + 4]   ; Get the port from the arguments
+    mov al, [esp + 8]   ; Get the value from the arguments
+    out dx, al          ; Write the value to the port
+    ret
+
+system_call_wrapper:
+    pusha
+    call syscall_handler
+    popa
+    iret
+
 
 section .bss
-resb 8192              ; 8KB for stack
+align 4
+stack_bottom:
+    resb 16384 ; 16 KB for stack
 stack_space:
