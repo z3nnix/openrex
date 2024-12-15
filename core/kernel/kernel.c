@@ -69,10 +69,7 @@ void kmain() {
                 
     char buffer[100];
     int bytes_read = ramfs_read(file_id, buffer, sizeof(buffer));
-    // test_syscall();
     kprint(buffer, 15);
-
-    // test_ramfs();
 
     while(true) {
         kprint("# ", 7);
@@ -82,7 +79,16 @@ void kmain() {
             continue;
         }
         
-        kprint(sometext, 15);
-        newline();
+        if (strcmp(sometext, "ramfs-test") == 0) {
+            test_ramfs();
+        } else if (strcmp(sometext, "syscall-test") == 0){
+            test_syscall();
+        } else if (strcmp(sometext, "clear") == 0) {
+            clearscreen();
+        } else {
+            kprint("Unknown command: ", 7);
+            kprint(sometext, 7);
+            newline();
+        }
     }
 }
